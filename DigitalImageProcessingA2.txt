@@ -1,0 +1,54 @@
+mySecondAssignment('eight.tif')
+
+function mySecondAssignment(image)
+%MYSECONDASSIGNMENT This function expects a image as an input, salt and pepper noise will be added and it will output the denoised avergaed and median images.
+
+    %Reading input file
+    I = imread(image);
+    subplot(2,2,1)
+    imshow(I); title("Input Image");
+    
+    %Adding noise
+    noisyImage = imnoise(I,'salt & pepper', 0.03);
+    subplot(2,2,2)
+    imshow(noisyImage); title("Salt & Pepper Noise Added");
+    
+    %taking size of the noisy image to be averaged
+    [m,n] = size(noisyImage);
+    filteredAvgImg = zeros(m,n);
+    
+    %applying averge filter
+    for i = 1:m-2
+        for j = 1:n-2
+            filteredAvgImg(i+1,j+1) = mean2(noisyImage(i:i+2,j:j+2));
+            filteredAvgImg = uint8(filteredAvgImg); 
+        end
+    end
+
+    %Showing and saving averaged filtered image
+    subplot(2,2,3)
+    imshow(uint8(filteredAvgImg)); title("After Applying Averaging Filter");
+    imwrite(filteredAvgImg, 'denoisedimage_averaging.bmp')
+    
+    filteredMedianImg = zeros(m,n);
+    filteredMedianImg = uint8(filteredMedianImg);
+    
+    %applying median filter
+    for i = 1:m-2
+        for j = 1:n-2
+            xmin = max(1,i-1);
+            xmax = min(m, i+1);
+            ymin = max(1,j-1);
+            ymax = min(n,j+1);
+            
+            temp = noisyImage(xmin:xmax, ymin:ymax);
+            filteredMedianImg(i,j) = median(temp(:)); 
+        end 
+    end
+    
+    %Showing and saving median filtered image
+    subplot(2,2,4)
+    imshow(uint8(filteredMedianImg)); title("After Applying Median Filter");
+    imwrite(filteredMedianImg, 'denoisedimage_median.jpeg')
+      
+end
